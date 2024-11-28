@@ -1,0 +1,12 @@
+- name: Install Jenkins on servers           # The descriptive name of the Ansible playbook; indicates its purpose is to install Jenkins
+  hosts: all                                 # This playbook will be executed on all hosts listed in the Ansible inventory
+  become: true                               # Allows privilege escalation (similar to using sudo) for executing tasks with elevated permissions
+  remote_user: ubuntu                        # Specifies the remote user account (ubuntu) to use when connecting to the servers
+
+  vars:                                      # Section where variables used in the playbook are defined
+    efs_mount_dir: "/data"                   # Variable defining the directory where the Elastic File System (EFS) will be mounted
+    jenkins_data_dir: "/data/jenkins"        # Variable defining the directory where Jenkins data will be stored
+    jenkins_lts_version: "2.387.1"           # Variable specifying the Long Term Support (LTS) version of Jenkins to install
+
+  roles:                                     # Section defining the roles to be applied
+    - jenkins-controller                     # Role to be applied; responsible for setting up the Jenkins controller

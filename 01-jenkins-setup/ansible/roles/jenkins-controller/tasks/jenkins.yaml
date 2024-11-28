@@ -1,0 +1,66 @@
+---
+- name: Add Jenkins apt repository key.                       # Name of the task; describes its purpose to add the Jenkins APT repository key
+  ansible.builtin.get_url:                                     # Uses the 'get_url' module to download a file from a URL
+    url: "https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key"  # URL of the Jenkins repository GPG key
+    dest: /etc/apt/trusted.gpg.d/jenkins.asc                   # Destination path where the downloaded key will be saved
+    mode: '0644'                                               # File permissions for the downloaded key (readable by all users)
+    force: true                                                # Forces the download even if the file already exists
+
+- name: Add Jenkins apt repository.                            # Name of the task; describes its purpose to add the Jenkins APT repository
+  apt_repository:                                              # Uses the 'apt_repository' module to manage APT repositories
+    repo: "deb https://pkg.jenkins.io/debian-stable binary/"   # Jenkins repository configuration string
+    state: present                                             # Ensures the repository is present in the sources list
+    update_cache: true                                         # Updates the APT package cache after adding the repository
+
+- name: Install Jenkins                                        # Name of the task; describes its purpose to install Jenkins
+  apt:                                                         # Uses the 'apt' module to manage packages on Debian-based systems
+    name: jenkins={{ jenkins_lts_version }}                    # Specifies the Jenkins package name and version to be installed
+    state: present                                             # Ensures the package is installed; if it's not, it will be installed
+
+- name: Stop Jenkins service                                   # Name of the task; describes its purpose to stop the Jenkins service
+  systemd:                                                     # Uses the 'systemd' module to manage systemd services
+    name: jenkins.service                                      # Specifies the name of the Jenkins service
+    state: stopped                                             # Ensures the service is stopped
+
+- name: Move Jenkins data to new directory                     # Name of the task; describes its purpose to move Jenkins data to a new directory
+  copy: src=/var/lib/jenkins/ dest={{ jenkins_data_dir }} remote_src=yes directory_mode=yes
+                                                               # Uses the 'copy' module to copy files/directories
+                                                               # src: Source directory containing Jenkins data
+                                                               # dest: Destination directory for Jenkins data (from a variable)
+                                                               # remote_src: Indicates that the source is on the remote machine
+                                                               # directory_mode: Preserves directory mode/permissions
+
+- name: Change directory owner                                 # Name of the task; describes its purpose to change the directory owner
+  file:                                                        # Uses the 'file' module to manage file/directory properties
+    path: "{{ jenkins_data_dir }}"                             # Path of the directory to change ownership (from a variable)
+    owner: jenkins                                             # Sets the owner of the directory to 'jenkins'
+    group: jenkins                                             # Sets the group of the directory to 'jenkins'
+    recurse: yes                                               # Recursively applies ownership to all files and directories within
+
+- name: Remove old Jenkins data directory                      # Name of the task; describes its purpose to remove the old Jenkins data directory
+  file:                                                        # Uses the 'file' module to manage file/directory properties
+    path: /var/lib/jenkins/                                    # Path of the directory to remove
+    state: absent                                              # Ensures the directory is absent (deleted)
+
+- name: Create override directory for Jenkins service          # Name of the task; describes its purpose to create an override directory for Jenkins service
+  become: true                                                 # Enables privilege escalation (similar to using sudo)
+  file:                                                        # Uses the 'file' module to manage file/directory properties
+    path: /etc/systemd/system/jenkins.service.d                # Path of the override directory to be created
+    state: directory                                           # Ensures the path is a directory; if it doesn't exist, it will be created
+
+- name: Add override file for Jenkins                          # Name of the task; describes its purpose to add an override file for Jenkins
+  template:                                                    # Uses the 'template' module to manage file templates
+    src: override.conf.j2                                      # Source template file on the control machine
+    dest: /etc/systemd/system/jenkins.service.d/override.conf  # Destination path on the remote machine
+    owner: root                                                # Sets the owner of the destination file to 'root'
+    group: root                                                # Sets the group of the destination file to 'root'
+    mode: '0644'                                               # File permissions for the destination file (read/write for owner, read for others)
+
+- name: Reload systemd daemon configuration                    # Name of the task; describes its purpose to reload the systemd daemon configuration
+  systemd:                                                     # Uses the 'systemd' module to manage systemd services
+    daemon_reload: yes                                         # Reloads the systemd manager configuration
+
+- name: Start Jenkins service                                  # Name of the task; describes its purpose to start the Jenkins service
+  systemd:                                                     # Uses the 'systemd' module to manage systemd services
+    name: jenkins                                              # Specifies the name of the Jenkins service
+    state: started                                             # Ensures the service is started

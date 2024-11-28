@@ -1,0 +1,54 @@
+---
+- name: Install Python 3                       # Name of the task; describes its purpose to install Python 3
+  apt:                                         # Uses the 'apt' module to manage packages on Debian-based systems
+    name: python3                              # Specifies the package name to be installed (Python 3)
+    state: present                             # Ensures that the package is installed; if it's not, it will be installed
+
+- name: Install pip                            # Name of the task; describes its purpose to install pip (Python package installer)
+  apt:                                         # Uses the 'apt' module to manage packages on Debian-based systems
+    name: python3-pip                          # Specifies the package name to be installed (pip for Python 3)
+    state: present                             # Ensures that the package is installed; if it's not, it will be installed
+
+- name: Install boto3 using pip3               # Name of the task; describes its purpose to install the boto3 library using pip3
+  become: true                                 # Enables privilege escalation (similar to using sudo)
+  pip:                                         # Uses the 'pip' module to manage Python packages
+    name: boto3                                # Specifies the Python package name to be installed (boto3)
+    state: present                             # Ensures that the package is installed; if it's not, it will be installed
+
+- name: Install AWS CLI using pip              # Name of the task; describes its purpose to install the AWS CLI using pip
+  become: true                                 # Enables privilege escalation (similar to using sudo)
+  pip:                                         # Uses the 'pip' module to manage Python packages
+    name: awscli                               # Specifies the Python package name to be installed (AWS CLI)
+    state: latest                              # Ensures that the latest version of the package is installed
+    executable: pip3                           # Specifies that pip3 should be used for installation
+
+- name: Install Ansible                        # Name of the task; describes its purpose to install Ansible
+  pip:                                         # Uses the 'pip' module to manage Python packages
+    name: ansible                              # Specifies the Python package name to be installed (Ansible)
+    state: latest                              # Ensures that the latest version of the package is installed
+
+- name: Add HashiCorp GPG key                  # Name of the task; describes its purpose to add the HashiCorp GPG key for package verification
+  become: yes                                  # Enables privilege escalation (similar to using sudo)
+  shell: "wget -qO- https://apt.releases.hashicorp.com/gpg | gpg --dearmor | sudo tee /usr/share/keyrings/hashicorp-archive-keyring.gpg"
+                                               # Uses the 'shell' module to run a command that downloads the GPG key and adds it to the keyring
+
+- name: Add HashiCorp APT repository           # Name of the task; describes its purpose to add the HashiCorp APT repository
+  become: yes                                  # Enables privilege escalation (similar to using sudo)
+  shell: "echo 'deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com {{ ansible_distribution_release }} main' | sudo tee /etc/apt/sources.list.d/hashicorp.list"
+                                               # Uses the 'shell' module to run a command that adds the HashiCorp repository to the sources list
+
+- name: Update apt cache                       # Name of the task; describes its purpose to update the apt package cache
+  become: yes                                  # Enables privilege escalation (similar to using sudo)
+  become_method: sudo                          # Specifies that sudo should be used for privilege escalation
+  apt:                                         # Uses the 'apt' module to manage packages on Debian-based systems
+    update_cache: yes                          # Updates the package cache to ensure the latest package information is available
+
+- name: Install Terraform                      # Name of the task; describes its purpose to install Terraform
+  apt:                                         # Uses the 'apt' module to manage packages on Debian-based systems
+    name: terraform                            # Specifies the package name to be installed (Terraform)
+    state: present                             # Ensures that the package is installed; if it's not, it will be installed
+
+- name: Install Packer                         # Name of the task; describes its purpose to install Packer
+  apt:                                         # Uses the 'apt' module to manage packages on Debian-based systems
+    name: packer                               # Specifies the package name to be installed (Packer)
+    state: present                             # Ensures that the package is installed; if it's not, it will be installed

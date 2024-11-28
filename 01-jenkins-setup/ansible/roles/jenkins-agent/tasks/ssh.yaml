@@ -1,0 +1,16 @@
+- name: Retrieve secret value from AWS Parameter Store  # Name of the task; describes its purpose to retrieve a secret value from AWS Parameter Store
+  script: "{{ playbook_dir }}/scripts/get-ssh-pub.py {{ public_key_path }}"  # Runs the specified Python script with the public key path as an argument
+  args:                                                # Specifies additional arguments for the script execution
+    executable: /usr/bin/python3                       # Defines the Python interpreter to use for running the script
+    remote_src: yes                                    # Indicates that the script source is located on the remote machine
+  register: secret_value                               # Registers the output of the script in a variable named 'secret_value'
+
+- name: Print registered variable                      # Name of the task; describes its purpose to print the registered variable
+  debug:                                               # Uses the 'debug' module to output information
+    var: secret_value                                  # Specifies the variable 'secret_value' to print its contents
+
+- name: Add public key to authorized_keys for ubuntu user  # Name of the task; describes its purpose to add a public key to the 'authorized_keys' file
+  authorized_key:                                         # Uses the 'authorized_key' module to manage SSH authorized keys
+    user: ubuntu                                          # Specifies the user for whom the key will be added (in this case, 'ubuntu')
+    state: present                                        # Ensures that the key is present in the 'authorized_keys' file
+    key: "{{ secret_value.stdout }}"                      # Sets the key to be added using the output from the previous script execution

@@ -1,0 +1,9 @@
+---
+- name: Update apt cache                      # Name of the task; describes its purpose to update the apt package cache
+  apt:                                        # Uses the 'apt' module to manage packages on Debian-based systems
+    update_cache: yes                         # Updates the package cache to ensure the latest package information is available
+
+- name: Install Java JDK 17                   # Name of the task; describes its purpose to install Java JDK 17
+  apt:                                        # Uses the 'apt' module to manage packages on Debian-based systems
+    name: openjdk-17-jdk                      # Specifies the package name to be installed (Java Development Kit 17)
+    state: present                            # Ensures that the package is installed; if it's not, it will be installed

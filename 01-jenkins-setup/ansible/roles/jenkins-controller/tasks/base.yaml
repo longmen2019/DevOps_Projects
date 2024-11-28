@@ -1,0 +1,32 @@
+---
+- name: Update apt cache                      # Name of the task; describes its purpose to update the apt package cache
+  apt:                                        # Uses the 'apt' module to manage packages on Debian-based systems
+    update_cache: yes                         # Updates the package cache to ensure the latest package information is available
+
+- name: Install Python 3                      # Name of the task; describes its purpose to install Python 3
+  apt:                                        # Uses the 'apt' module to manage packages on Debian-based systems
+    name: python3                             # Specifies the package name to be installed (Python 3)
+    state: present                            # Ensures that the package is installed; if it's not, it will be installed
+
+- name: Install pip                           # Name of the task; describes its purpose to install pip (Python package installer)
+  apt:                                        # Uses the 'apt' module to manage packages on Debian-based systems
+    name: python3-pip                         # Specifies the package name to be installed (pip for Python 3)
+    state: present                            # Ensures that the package is installed; if it's not, it will be installed
+
+- name: Install boto3 using pip3              # Name of the task; describes its purpose to install the boto3 library using pip3
+  become: true                                # Enables privilege escalation (similar to using sudo)
+  pip:                                        # Uses the 'pip' module to manage Python packages
+    name: boto3                               # Specifies the Python package name to be installed (boto3)
+    state: present                            # Ensures that the package is installed; if it's not, it will be installed
+
+- name: Install AWS CLI using pip             # Name of the task; describes its purpose to install the AWS CLI using pip
+  become: true                                # Enables privilege escalation (similar to using sudo)
+  pip:                                        # Uses the 'pip' module to manage Python packages
+    name: awscli                              # Specifies the Python package name to be installed (AWS CLI)
+    state: latest                             # Ensures that the latest version of the package is installed
+    executable: pip3                          # Specifies that pip3 should be used for installation
+
+- name: Install Java JDK 17                   # Name of the task; describes its purpose to install Java JDK 17
+  apt:                                        # Uses the 'apt' module to manage packages on Debian-based systems
+    name: openjdk-17-jdk                      # Specifies the package name to be installed (Java Development Kit 17)
+    state: present                            # Ensures that the package is installed; if it's not, it will be installed

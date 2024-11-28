@@ -1,0 +1,4 @@
+---
+- include_tasks: java.yaml       # Includes and executes the tasks defined in the 'java.yaml' file; typically used for Java-related setup
+- include_tasks: tools.yaml      # Includes and executes the tasks defined in the 'tools.yaml' file; usually involves installing or configuring tools
+- include_tasks: ssh.yaml        # Includes and executes the tasks defined in the 'ssh.yaml' file; commonly involves SSH configuration or keys setup

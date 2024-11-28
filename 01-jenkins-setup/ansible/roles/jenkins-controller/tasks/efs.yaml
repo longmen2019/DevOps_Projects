@@ -1,0 +1,18 @@
+- name: Install NFS client                      # Name of the task; describes its purpose to install the NFS client
+  apt:                                          # Uses the 'apt' module to manage packages on Debian-based systems
+    name: nfs-common                            # Specifies the package name to be installed (NFS client utilities)
+    state: present                              # Ensures that the package is installed; if it's not, it will be installed
+
+- name: Ensure mount directory exists.          # Name of the task; describes its purpose to ensure the mount directory exists
+  file:                                         # Uses the 'file' module to manage files and directories
+    path: "{{ efs_mount_dir }}"                 # Specifies the path of the directory to be ensured (from a variable)
+    state: directory                            # Ensures that the path is a directory; if it doesn't exist, it will be created
+    mode: 0755                                  # Sets the permissions for the directory (read/write/execute for owner, read/execute for others)
+
+- name: Ensure EFS volume is mounted.           # Name of the task; describes its purpose to ensure the EFS volume is mounted
+  mount:                                        # Uses the 'mount' module to manage filesystem mounts
+    name: "{{ efs_mount_dir }}"                 # Specifies the mount point directory (from a variable)
+    src: "{{ efs_mount_point }}:/"              # Specifies the source of the mount (EFS mount point from a variable)
+    fstype: nfs4                                # Specifies the filesystem type (NFS version 4)
+    opts: nfsvers=4.1                           # Mount options; specifies NFS version 4.1
+    state: mounted                              # Ensures that the filesystem is mounted; if it's not, it will be mounted

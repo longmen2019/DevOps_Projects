@@ -1,0 +1,10 @@
+- name: Install Jenkins on servers        # Name of the playbook; describes what it does
+  hosts: all                             # Specifies that this playbook applies to all hosts in the inventory
+  become: true                           # Enables privilege escalation (equivalent to sudo)
+  remote_user: ubuntu                    # Specifies the remote user to be used for connections (in this case, 'ubuntu')
+
+  vars:                                  # Section for defining variables
+    public_key_path: "/devops-tools/jenkins/id_rsa.pub"  # Path to the public key for Jenkins
+
+  roles:                                 # Section for defining roles
+    - jenkins-agent                      # Specifies the role to be applied (in this case, 'jenkins-agent')

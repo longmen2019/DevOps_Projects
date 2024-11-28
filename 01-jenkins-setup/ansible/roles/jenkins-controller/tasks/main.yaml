@@ -1,0 +1,4 @@
+---
+- include_tasks: base.yaml      # Includes and executes the tasks defined in the 'base.yaml' file; typically used for base system setup or common tasks
+- include_tasks: efs.yaml       # Includes and executes the tasks defined in the 'efs.yaml' file; usually involves setup related to Elastic File System (EFS)
+- include_tasks: jenkins.yaml   # Includes and executes the tasks defined in the 'jenkins.yaml' file; commonly used for Jenkins installation and configuration
